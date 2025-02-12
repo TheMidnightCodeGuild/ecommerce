@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-
+import SearchBar from "@/pages/components/SearchBar"
 const Home = () => {
   const [userData, setUserData] = useState(null);
 
@@ -28,6 +28,8 @@ const Home = () => {
       >
         Sign Out
       </button>
+
+      <SearchBar />
     </div>
   );
 };
