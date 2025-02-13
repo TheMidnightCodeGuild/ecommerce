@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FaShoppingCart, FaStar, FaHeart } from 'react-icons/fa';
 import { db } from '../../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { auth } from '../../lib/firebase';
 
 export default function CardDetails() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function CardDetails() {
   const [modalZoom, setModalZoom] = useState(1);
   const imageRef = useRef(null);
   const modalImageRef = useRef(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -119,7 +121,40 @@ export default function CardDetails() {
       setError('Please select a size');
       return;
     }
-    // Add to cart logic here
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.uid,
+          itemId: itemId,
+          quantity: 1,
+          action: 'add'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add item to cart');
+      }
+
+      setSuccessMessage('Item added to cart successfully!');
+      setTimeout(() => {
+        setSuccessMessage('');
+        router.push('/cart');
+      }, 1500);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setError('Failed to add item to cart. Please try again.');
+    }
   };
 
   const handleBuyNow = () => {
@@ -155,6 +190,11 @@ export default function CardDetails() {
 
   return (
     <>
+      {successMessage && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50">
+          {successMessage}
+        </div>
+      )}
       {product && (
         <div className="max-w-[1300px] mx-auto px-4 py-4 md:py-8">
           <div className="flex flex-col lg:flex-row gap-6">

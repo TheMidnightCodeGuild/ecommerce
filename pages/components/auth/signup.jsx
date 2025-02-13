@@ -17,11 +17,13 @@ const Signup = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       // Save user data to Firestore
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        name,
-        email,
-        createdAt: new Date().toISOString(),
-      });
+     // Save user data to Firestore
+await setDoc(doc(db, 'users', userCredential.user.uid), {
+  name,
+  email,
+  createdAt: new Date().toISOString(),
+  cart: [], // Initialize empty cart array
+});
       // Firebase will automatically trigger onAuthStateChanged
     } catch (error) {
       setError(error.message);

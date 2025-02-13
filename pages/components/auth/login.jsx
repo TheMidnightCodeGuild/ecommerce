@@ -34,11 +34,13 @@ const Login = () => {
       
       if (!userDoc.exists()) {
         // If new user, save to Firestore
-        await setDoc(doc(db, 'users', user.uid), {
-          name: user.displayName,
-          email: user.email,
-          createdAt: new Date().toISOString(),
-        });
+       // Save user data to Firestore
+await setDoc(doc(db, 'users', userCredential.user.uid), {
+  name,
+  email,
+  createdAt: new Date().toISOString(),
+  cart: [], // Initialize empty cart array
+});
       }
       // Firebase will automatically trigger onAuthStateChanged
     } catch (error) {
